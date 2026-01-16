@@ -60,7 +60,7 @@ public class Megaknight extends Game {
       " skills to create an earthquake "+
       " This shook the ground and "+other+" dealing "+ damage +" points of damage.";
     }else{
-      return "Not enough cooldown to use the ultimate code. Instead "+attack(other);
+      return "Not enough cooldown to use the ultimate smash. Instead "+attack(other);
     }
   }
 
@@ -73,7 +73,7 @@ public class Megaknight extends Game {
   public String support(){
     int hp = 1;
     setHP(getHP()+hp);
-    return this+" drinks a coffee to restores "+restoreSpecial(6)+" "
+    return this+" eats pekka's pancakes to restore' "+restoreSpecial(6)+" "
     + getSpecialName()+ " and "+hp+" HP";
   }
 }}

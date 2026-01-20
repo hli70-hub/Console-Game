@@ -1,79 +1,68 @@
-public class Megaknight extends Game {
-    int cooldown, cooldownMax;
-  String preferred;
+public class MegaKnight extends Troop {
 
-  /*the other constructors ultimately call the constructor
-    with all parameters.*/
-  public Megaknight(String name, int hp, String language){
-    super(name,hp);
-    cooldownMax = 12;
-    cooldown = cooldownMax/2;
-    preferredLanguage = language;
+  int charge, chargeMax;
+
+  public MegaKnight(String name, int hp){
+    super(name, hp);
+    chargeMax = 60;
+    charge = chargeMax / 3;
   }
 
-  public MyWarrior(String name, int hp){
-    this(name,hp,"c++");  
+  public MegaKnight(String name){
+    this(name, 90);
   }
 
-  public MyWarrior(String name){
-    this(name,12);
+  public MegaKnight(){
+    this("Mega Knight");
   }
 
-  public MyWarrior(){
-    this("Megaknight");
-  }
-
-  /*The next 8 methods are all required because they are abstract:*/
   public String getSpecialName(){
-    return "cooldown";
+    return "charge";
   }
 
   public int getSpecial(){
-    return cooldown;
+    return charge;
   }
-  
+
   public void setSpecial(int n){
-    cooldown = n;
+    charge = n;
   }
 
   public int getSpecialMax(){
-    return cooldownMax;
+    return chargeMax;
   }
 
-  /*Deal 1-6 damage to opponent, restores 2 caffeine*/
-  public String attack(Adventurer other){
-    int damage = (int)(Math.random()*6)+1;
+  public String attack(Troop other){
+    int damage = (int)(Math.random() * 20) + 15;
     other.applyDamage(damage);
-    restoreSpecial(2);
-    return this + " jumped on "+ other + " and dealt "+ damage +
-    " points of damage.";
+    restoreSpecial(5);
+    return this + " slams " + other +
+           " dealing " + damage + " damage.";
   }
-  /*Deal 3-12 damage to opponent, only if caffeine is high enough.
-    Reduces caffeine by 8.
-  */
-  public String specialAttack(Adventurer other){
-    if(getSpecial() >= 8){
-      setSpecial(getSpecial()-8);
-      int damage = (int)(Math.random()*5+Math.random()*5)+3;
+
+  public String specialAttack(Troop other){
+    if (getSpecial() >= 40){
+      setSpecial(getSpecial() - 40);
+      int damage = (int)(Math.random() * 30) + 50;
       other.applyDamage(damage);
-      return this + " used their "+preferredLanguage+
-      " skills to create an earthquake "+
-      " This shook the ground and "+other+" dealing "+ damage +" points of damage.";
-    }else{
-      return "Not enough cooldown to use the ultimate smash. Instead "+attack(other);
+      return this + " leaps into the air and CRASHES down on " +
+             other + " for " + damage + " massive damage!";
+    } else {
+      return "Not enough charge. Instead " + attack(other);
     }
   }
 
-  /*Restores 5 special to other*/
-  public String support(Adventurer other){
-    return "Gives a coffee to "+other+" and restores " 
-    +other.restoreSpecial(5)+" "+other.getSpecialName();
+  public String support(Troop other){
+    return this + " shields " + other +
+           ", restoring " + other.restoreSpecial(10) +
+           " " + other.getSpecialName();
   }
-  /*Restores 6 special and 1 hp to self.*/
+
   public String support(){
-    int hp = 1;
-    setHP(getHP()+hp);
-    return this+" eats pekka's pancakes to restore' "+restoreSpecial(6)+" "
-    + getSpecialName()+ " and "+hp+" HP";
+    int hp = 10;
+    setHP(getHP() + hp);
+    return this + " braces himself, restoring " +
+           restoreSpecial(15) + " " + getSpecialName() +
+           " and " + hp + " HP.";
   }
-}}
+}

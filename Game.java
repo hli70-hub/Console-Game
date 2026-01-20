@@ -1,99 +1,94 @@
-// Collaborators: Henry, Aditya
-
+import java.util.Scanner;
 import java.util.Random;
 
-public abstract class Adventurer{
-  private String name;
-  private int HP,maxHP;
+public class Game {
 
+    public static final String RESET = "\u001b[0m";
+    public static final String RED = "\u001b[31m";
+    public static final String GREEN = "\u001b[32m";
+    public static final String YELLOW = "\u001b[33m";
+    public static final String BLUE = "\u001b[34m";
+    public static final String PURPLE = "\u001b[35m";
+    public static final String CYAN = "\u001b[36m";
 
-  /*There is no no-arg constructor. Be careful with your subclass constructors.*/
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        Random rand = new Random();
 
-  public Adventurer(String name){
-      this(name, 10);
-  }
+        System.out.println(BLUE + "Choose your troop: Knight, Wizard, MegaKnight" + RESET);
+        String choice = sc.nextLine();
+        Troop player;
+        switch(choice) {
+            case "Knight":
+                player = new Knight();
+                break;
+            case "Wizard":
+                player = new Wizard();
+                break;
+            case "MegaKnight":
+                player = new MegaKnight();
+                break;
+            default:
+                System.out.println(RED + "Invalid choice, defaulting to Knight." + RESET);
+                player = new Knight();
+        }
 
-  public Adventurer(String name, int hp){
-      this.name = name;
-      this.HP = hp;
-      this.maxHP = hp;
-  }
+        Troop enemy;
+        int enemyType = rand.nextInt(3);
+        if(enemyType == 0) enemy = new Knight("Enemy Knight");
+        else if(enemyType == 1) enemy = new Wizard("Enemy Wizard");
+        else enemy = new MegaKnight("Enemy MegaKnight");
 
-  //concrete method written using abstract methods.
-  //refill special resource by amount, but only up to at most getSpecialMax()
-  public int restoreSpecial(int n){
-      if( n > getSpecialMax() - getSpecial()){
-              n = getSpecialMax() - getSpecial();
-      }
-      setSpecial(getSpecial()+n);
-      return n;
-  }
+        printStatus(player, enemy);
 
-  //Abstract methods are meant to be implemented in child classes.
+        while(player.getHP() > 0 && enemy.getHP() > 0) {
+            System.out.println(YELLOW + "\nChoose action: attack, special, support, quit" + RESET);
+            String action = sc.nextLine();
 
-  /*
-    all adventurers must have a custom special
-    consumable resource (mana/rage/money/witts etc)
-  */
-  //give it a short name (fewer than 13 characters)
-  public abstract String getSpecialName();
-  //accessor methods
-  public abstract int getSpecial();
-  public abstract void setSpecial(int n);
-  public abstract int getSpecialMax();
+            String result = "";
+            switch(action) {
+                case "attack":
+                    result = player.attack(enemy);
+                    break;
+                case "special":
+                    result = player.specialAttack(enemy);
+                    break;
+                case "support":
+                    result = player.support();
+                    break;
+                case "quit":
+                    System.out.println(RED + "You quit the game. Goodbye!" + RESET);
+                    sc.close();
+                    return;
+                default:
+                    System.out.println(RED + "Invalid action. Try again." + RESET);
+                    continue;
+            }
 
-  /*
-    all adventurers must have a way to attack enemies and
-    support their allys
-  */
-  //hurt or hinder the target adventurer
-  public abstract String attack(Adventurer other);
+            System.out.println(GREEN + "\nYour action: " + RESET + result);
 
-  //heall or buff the target adventurer
-  public abstract String support(Adventurer other);
+            if(enemy.getHP() <= 0) break;
 
-  //heall or buff self
-  public abstract String support();
+            int enemyAction = rand.nextInt(3);
+            String enemyResult = "";
+            if(enemyAction == 0) enemyResult = enemy.attack(player);
+            else if(enemyAction == 1) enemyResult = enemy.specialAttack(player);
+            else enemyResult = enemy.support();
 
-  //hurt or hinder the target adventurer, consume some special resource
-  public abstract String specialAttack(Adventurer other);
+            System.out.println(RED + "\nEnemy's turn: " + RESET + enemyResult);
 
-  /*
-    standard methods
-  */
-  public void applyDamage(int amount){
-    this.HP -= amount;
-  }
+            printStatus(player, enemy);
+        }
 
+        if(player.getHP() <= 0) System.out.println(RED + "\nYou were defeated! Game over." + RESET);
+        else if(enemy.getHP() <= 0) System.out.println(GREEN + "\nYou defeated the enemy! Victory!" + RESET);
 
+        sc.close();
+    }
 
-  //toString method
-  public String toString(){
-    return this.getName();
-  }
-
-  //Get Methods
-  public String getName(){
-    return name;
-  }
-
-  public int getHP(){
-      return HP;
-  }
-
-  public int getmaxHP(){
-      return maxHP;
-  }
-  public void setmaxHP(int newMax){
-        maxHP = newMax;
-  }
-
-  //Set Methods
-  public void setHP(int health){
-      this.HP = health;
-  }
-
-  public void setName(String s){
-      this.name = s;
-  }
+    public static void printStatus(Troop player, Troop enemy) {
+        System.out.println(CYAN + "\nCurrent Status:" + RESET);
+        System.out.println(BLUE + player.getName() + RESET + " | HP: " + player.getHP() + " | " + player.getSpecialName() + ": " + player.getSpecial());
+        System.out.println(PURPLE + enemy.getName() + RESET + " | HP: " + enemy.getHP() + " | " + enemy.getSpecialName() + ": " + enemy.getSpecial());
+    }
 }
